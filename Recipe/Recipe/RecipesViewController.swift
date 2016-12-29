@@ -8,11 +8,8 @@
 
 import UIKit
 
-protocol AddRecipeViewControllerProtocol
-{
-    func dismissViewController(newrecipe: newRecipe)
-}
 
+// remember i remind you guys to use extension when implementing protocol/delegate/datasource??
 class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewControllerProtocol {
 
     @IBOutlet weak var tableView: UITableView!
@@ -44,7 +41,7 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
         super.viewDidLoad()
         pickerView.isHidden = true
         categories.append("All")
-        parseXML()
+        parseXML() // will be better if you create a separate class for XMLParser and let that class handle all the parsing
         
 
         
@@ -55,6 +52,9 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
         tableView.reloadData()
     }
     
+    
+    // This whole chunk is better separated into extension or as mentioned above use separate class to handle the parser
+    // start here ---
     func parseXML()
     {
                 if let path = Bundle.main.url(forResource: "recipetypes", withExtension: "xml")
@@ -71,7 +71,7 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
         eName = elementName
         if elementName == "recipetype"
         {
-            recipeType = String()
+            recipeType = String() // this not eaxctly needed unless you create a new node
         }
     }
     
@@ -82,7 +82,7 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
             recipe.recipeType = recipeType
             categories.append(recipeType)
         }
-        tableView.reloadData()
+        tableView.reloadData() // you don't need to reload tableview here
     }
     
     func parser(_ parser: XMLParser, foundCharacters string: String) {
@@ -96,8 +96,11 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
             }
         }
         
-        tableView.reloadData()
+        tableView.reloadData() // you don't need to reload tableview here too
     }
+    // --- until here
+    
+    
 
 
     @IBAction func sortButton(_ sender: UIBarButtonItem)
@@ -125,15 +128,27 @@ class RecipesViewController: UIViewController, XMLParserDelegate, AddRecipeViewC
     
     func dismissViewController(newrecipe: newRecipe)
     {
+        
+        
         self.dismiss(animated: false, completion: {() -> Void in
+            
+            // why did you need to instantiate again? you just need to dismiss it
+            // from this --
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "Recipes") as! RecipesViewController
             self.present(vc, animated: true, completion: nil)
+            // until this --
+            // not required
+            
+            
         })
+        
+        // this should be inside the closure instead ^
         recipes.append(newrecipe)
         tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
         if segue.identifier == "detailSegue"
         {
             let destination = segue.destination as! DetailViewController
@@ -202,17 +217,31 @@ extension RecipesViewController: UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        // why did you need to count the recipe == 0?
+        
         if filterRecipes.count == 0
         {
             recipes.remove(at: indexPath.row)
         }
         else
         {
+            // you don't need to do this
+            // simply filter your array data source and reloadData of your table view
             let object = filterRecipes[indexPath.row]
             recipes = recipes.filter{$0.name != object.name}
             filterRecipes.remove(at: indexPath.row)
         }
         tableView.reloadData()
+        
+        // on editing what you should check is the editing style
+        // ex:
+        switch editingStyle {
+        case .delete: break // create a function to handle deletion
+        case .insert: break// create a function to handle insertion
+        default: break
+            // do something here
+        }
     }
 }
 

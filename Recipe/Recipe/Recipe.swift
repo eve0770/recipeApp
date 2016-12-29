@@ -8,6 +8,10 @@
 
 import Foundation
 
+// this class and newRecipe class is redundant
+// you only need one
+// combine this and newRecipe class
+// the class is Recipe, and new is just the state of the object
 class Recipe {
-    var recipeType: String = String()
+    var recipeType: String = String() // use enum instead
 }
