@@ -15,14 +15,21 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var foodImage: UIImageView!
     
+    // don't use this
+    // use the model class that you created which is Recipe
     var name : String?
     var type : String?
     var desc : String?
     var headtitle : String?
     var foodpic : UIImage?
     
+    
+    // so you will have something like
+    // var recipe : Recipe! // you put force unwrap here because this viewcontroller cannot exist without the recipe, you don't want to display empty recipe
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         nameText.text = name
         typeText.text = type
         descText.text = desc
@@ -38,6 +45,7 @@ class DetailViewController: UIViewController {
     
     @IBAction func backButton(_ sender: UIBarButtonItem)
     {
+        // please use delegate / protocol
         self.dismiss(animated: true, completion: nil)
     }
 
